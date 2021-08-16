@@ -15,7 +15,7 @@ export const HomePage = () => {
   const endpoint = "https://remotive.io/api/remote-jobs?search=";
 
   const [query, setQuery] = useState("");
-  const [jobs, setJobs] = useState([]);
+  const [results, setResults] = useState([]);
 
   const handleChange = (event) => {
     setQuery(event.target.value);
@@ -24,19 +24,20 @@ export const HomePage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
   };
-
-  useEffect(async () => {
-    const response = await fetch(endpoint + query);
-    if (!response.ok) {
-      alert("Bad response from server");
-      return;
-    }
-
-    const jobs = await response.json();
-    console.log(jobs);
-    setJobs(jobs);
+  useEffect(() => {
+    const getData = async () => {
+      let response = await fetch(endpoint + query);
+      if (!response.ok) {
+        alert("Bad response from server");
+      } else {
+        let jobs = await response.json();
+        console.log(jobs);
+        setResults({ results: jobs.jobs });
+        console.log(results);
+      }
+    };
+    getData();
   }, []);
-
   return (
     <>
       <Row className="homePageContainer">
@@ -58,7 +59,7 @@ export const HomePage = () => {
       </Row>
       <Row>
         <Col>
-          {jobs.map((job) => {
+          {[results].map((job) => {
             <Card key={job.id}>
               <Card.Img variant="top" src="holder.js/100px180?text=Image cap" />
               <Card.Body>
